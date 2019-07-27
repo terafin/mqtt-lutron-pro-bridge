@@ -68,8 +68,9 @@ client.on('message', (topic, message) => {
 lutron.lutronEvent.on('data', (data) => {
 	const topic = mqtt_helpers.generateTopic(topic_prefix, data.deviceId.toString(), data.action.toString())
 	const message = data.param.toString()
-	var options = {retain: true, qos: 1}
+	const type = data.type
+	var options = {retain: (type == 'OUTPUT' ? true : false), qos: 1}
 
-	logging.info(' => publishing topic: ' + topic + '    message: ' + message)
+	logging.info(' => publishing topic: ' + topic + '    message: ' + message + '    options: ' + JSON.stringify(options))
 	client.smartPublish(topic, message, options)
 })
