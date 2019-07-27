@@ -14,35 +14,35 @@ variables:
 
 build-master:
   stage: build
-  before_script:
-    - echo "$CI_REGISTRY_USER - $CI_REGISTRY_PASSWORD - $CI_REGISTRY - $CI_REGISTRY_IMAGE"
-    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
   script:
-    - docker build --pull -t "$CI_REGISTRY_IMAGE" .
-    - docker push "$CI_REGISTRY_IMAGE"
+    - docker build -t "$CI_REGISTRY_IMAGE" .
   only:
     - master
 
 build-master-docker:
   stage: build
+  script:
+    - docker build --pull -t $DOCKER_REGISTRY_IMAGE .
+  only:
+    - master
+
+registry-local:
+  stage: publish locally
+  before_script:
+    - echo "$CI_REGISTRY_USER - $CI_REGISTRY_PASSWORD - $CI_REGISTRY - $CI_REGISTRY_IMAGE"
+    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
+  script:
+    - docker push "$CI_REGISTRY_IMAGE"
+  only:
+    - master
+
+registry-docker:
+  stage: publish to docker
   before_script:
     - echo "$DOCKER_REGISTRY_USER - $DOCKER_REGISTRY_PASSWORD - $DOCKER_REGISTRY_IMAGE"
     - docker login index.docker.io -u $DOCKER_REGISTRY_USER -p $DOCKER_REGISTRY_PASSWORD
   script:
-    - docker build --pull -t $DOCKER_REGISTRY_IMAGE .
     - docker push $DOCKER_REGISTRY_IMAGE
-  only:
-    - master
-
-build:
-  stage: build
-  before_script:
-    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
-  script:
-    - docker build --pull -t "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG" .
-    - docker push "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG"
-  except:
-    - master
 
 deploy:
   stage: deploy
