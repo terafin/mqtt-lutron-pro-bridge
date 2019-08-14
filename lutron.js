@@ -23,16 +23,35 @@ module.exports = function(config) {
 		timeout: 5000
 	}
 
+	this.connect = function() {
+		this.telnet.connect(params)
+	}
+
+	this.deferredConnect = function() {
+		setTimeout(function() {
+			this.connect()
+		}, 10)
+	}
+
+	this._sendCommandFunction = function(func) {
+		if (!this.connected) {
+			this.connect()
+			setTimeout(func, 5)
+		} else {
+			func()
+		}
+
+	}
 	this.sendLutronCommand = function(devId, val) {
 		logging.info('sendLutronCommand: ' + devId + ' =' + val)
 		var str = '#OUTPUT,' + devId + ',1,' + val
-		this.telnet.getSocket().write(str + '\n')
+		this.lutronSend(str)
 	}
 
 	this.sendLutronStatus = function(devId) {
 		logging.info('sendLutronCommand: ' + devId + ' =' + val)
 		var str = '?OUTPUT,' + devId + ',1'
-		this.telnet.getSocket().write(str + '\n')
+		this.lutronSend(str)
 	}
 
 	this.telnet.on('data', (function(self, pkt) {
@@ -47,29 +66,28 @@ module.exports = function(config) {
 	this.telnet.on('close', function() {
 		this.connected = false
 		logging.error('telnet closed')
-
-		setTimeout(function() {
-			this.telnet.connect(params)
-		}, 10)
+		this.deferredConnect()
 	})
 
 	this.telnet.on('error', function() {
-		logging.error('telent error, disconnected')
+		logging.error('telnet error, disconnected')
+		this.connected = false
+		this.deferredConnect()
 
-		setTimeout(function() {
-			this.telnet.connect(params)
-		}, 10)
 	})
 
 	this.telnet.on('failedlogin', function() {
-		logging.error('telent failed login')
+		logging.error('telnet failed login')
+		this.connected = false
 	})
 
 	this.lutronSend = function(msg, fn) {
-		this.telent.getSocket().write(msg + '\n', fn)
+		this._sendCommandFunction(function() {
+			this.telnet.getSocket().write(msg + '\n', fn)
+		})
 	}
 
-	this.lutrongUpdate = function(deviceId, fn) {
+	this.lutronUpdate = function(deviceId, fn) {
 		this.lutronSend('?OUTPUT,' + deviceId + ',1', fn)
 	}
 
@@ -83,6 +101,7 @@ module.exports = function(config) {
 		var cmd = st[0]
 		var cs = st.substring(1).split(',')
 		var type = cs[0]
+
 		if (cs.length > 3) {
 			var deviceId = parseInt(cs[1])
 			var action = parseInt(cs[2])
@@ -97,5 +116,6 @@ module.exports = function(config) {
 			})
 		}
 	}
-	this.telnet.connect(params)
+
+	this.connect()
 }
