@@ -34,7 +34,11 @@ const lutron = new lutronLib({ip: lutronIP})
 
 // MQTT Event Handlers
 var connectedEvent = function() {
-	const topic = topic_prefix + '/+/set'
+	var topic = topic_prefix + '/+/set'
+	logging.info('Subscribing to topic: ' + topic)
+	client.subscribe(topic, {qos: 1})
+
+	topic = topic_prefix + '/+/press'
 	logging.info('Subscribing to topic: ' + topic)
 	client.subscribe(topic, {qos: 1})
 	health.healthyEvent()
@@ -60,7 +64,11 @@ client.on('message', (topic, message) => {
 	const deviceId = components[components.length - 2]
 	logging.info(' => topic: ' + topic + '  message: ' + message + ' deviceId: ' + deviceId)
 	if (deviceId != 0) {
-		lutron.sendLutronCommand(deviceId, message)
+		if (topic.includes('press')) {
+			lutron.sendButtonCommand(deviceId, message)
+		} else {
+			lutron.sendLutronCommand(deviceId, message)
+		}
 	}
 })
 
