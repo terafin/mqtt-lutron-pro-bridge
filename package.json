@@ -1,22 +1,22 @@
 {
-    "name": "mqtt-lutron-pro-bridge",
-    "version": "0.0.1",
-    "description": "Bridge Lutron Pro to and from MQTT",
-    "license": "MIT",
-    "main": "mqtt-lutron-pro-bridge.js",
-    "repository": {
-        "url": "https://github.com/terafin/mqtt-lutron-pro-bridge"
-    },
-    "scripts": {
-        "start": "node mqtt-lutron-pro-bridge.js"
-    },
-    "dependencies": {
-        "homeautomation-js-lib": "https://github.com/terafin/homeautomation-js-lib.git",
-        "lodash": "^4.17.16",
-        "telnet-client": "1.0.4",
-        "mqtt": "latest"
-    },
-    "engines": {
-        "node": ">=4"
-    }
+  "name": "mqtt-lutron-pro-bridge",
+  "version": "0.0.1",
+  "description": "Bridge Lutron Pro to and from MQTT",
+  "license": "MIT",
+  "main": "mqtt-lutron-pro-bridge.js",
+  "repository": {
+    "url": "https://github.com/terafin/mqtt-lutron-pro-bridge"
+  },
+  "scripts": {
+    "start": "node mqtt-lutron-pro-bridge.js"
+  },
+  "dependencies": {
+    "homeautomation-js-lib": "https://github.com/terafin/homeautomation-js-lib.git",
+    "lodash": "^4.17.16",
+    "telnet-client": "1.0.4",
+    "mqtt": "latest"
+  },
+  "engines": {
+    "node": ">=4"
+  }
 }
