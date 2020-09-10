@@ -13,7 +13,7 @@
     "dependencies": {
         "homeautomation-js-lib": "https://github.com/terafin/homeautomation-js-lib.git",
         "lodash": "^4.17.20",
-        "telnet-client": "1.4.5",
+        "telnet-client": "1.4.6",
         "mqtt": "latest"
     },
     "engines": {
